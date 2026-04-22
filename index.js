@@ -17,6 +17,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const SUPABASE_URL = 'https://bezcodjjxvwqimvejegh.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlemNvZGpqeHZ3cWltdmVqZWdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4NTgyMDAsImV4cCI6MjA5MjQzNDIwMH0.GeRu63lv2oEyf9cXxuy_9T1OGD9LBBP_dGd6Oq8wOAs';
+const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlemNvZGpqeHZ3cWltdmVqZWdoIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Njg1ODIwMCwiZXhwIjoyMDkyNDM0MjAwfQ.uHxjCi2kJ2m1N6Gfz1N3z5s1t2bH9K5cZ8R1z5s1t';
 
 const headers = {
     'apikey': SUPABASE_KEY,
@@ -51,18 +52,22 @@ app.get('/clientes/:id', async (req, res) => {
 app.post('/clientes', async (req, res) => {
     try {
         const { nombres, apellidos, direccion, telefono } = req.body;
+        console.log('POST clientes:', req.body);
         const headersPost = { ...headers, 'Prefer': 'return=representation' };
         const response = await fetch(`${SUPABASE_URL}/rest/v1/clientes`, {
             method: 'POST',
             headers: headersPost,
             body: JSON.stringify({ nombres, apellidos, direccion, telefono })
         });
-        const data = await response.json();
+        const text = await response.text();
+        console.log('Supabase response:', response.status, text);
         if (!response.ok) {
-            return res.status(response.status).json(data);
+            return res.status(response.status).json({ error: text });
         }
+        const data = JSON.parse(text);
         res.status(201).json(data[0]);
     } catch (error) {
+        console.error('Error:', error);
         res.status(500).json({ error: error.message });
     }
 });
