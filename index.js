@@ -54,10 +54,10 @@ app.post('/clientes', async (req, res) => {
         const { nombres, apellidos, direccion, telefono } = req.body;
         
         const clienteData = {
-            nombres: nombres?.trim() || '',
-            apellidos: apellidos?.trim() || '',
-            direccion: direccion?.trim() || '',
-            telefono: telefono?.trim() || ''
+            nombres: (nombres?.trim() || '').substring(0, 50),
+            apellidos: (apellidos?.trim() || '').substring(0, 50),
+            direccion: (direccion?.trim() || '').substring(0, 50),
+            telefono: (telefono?.trim() || '').substring(0, 50)
         };
         
         console.log('POST clientes - data:', clienteData);
@@ -93,6 +93,14 @@ app.post('/clientes', async (req, res) => {
 app.put('/clientes/:id', async (req, res) => {
     try {
         const { nombres, apellidos, direccion, telefono } = req.body;
+        
+        const clienteData = {
+            nombres: (nombres?.trim() || '').substring(0, 50),
+            apellidos: (apellidos?.trim() || '').substring(0, 50),
+            direccion: (direccion?.trim() || '').substring(0, 50),
+            telefono: (telefono?.trim() || '').substring(0, 50)
+        };
+        
         const headersPut = {
             'apikey': SUPABASE_SERVICE_KEY,
             'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
@@ -102,7 +110,7 @@ app.put('/clientes/:id', async (req, res) => {
         const response = await fetch(`${SUPABASE_URL}/rest/v1/clientes?id_cliente=eq.${req.params.id}`, {
             method: 'PATCH',
             headers: headersPut,
-            body: JSON.stringify({ nombres, apellidos, direccion, telefono })
+            body: JSON.stringify(clienteData)
         });
         const text = await response.text();
         if (!response.ok) {
