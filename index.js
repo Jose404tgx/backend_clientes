@@ -52,23 +52,36 @@ app.get('/clientes/:id', async (req, res) => {
 app.post('/clientes', async (req, res) => {
     try {
         const { nombres, apellidos, direccion, telefono } = req.body;
-        console.log('POST clientes:', req.body);
+        
+        const clienteData = {
+            nombres: nombres?.trim() || '',
+            apellidos: apellidos?.trim() || '',
+            direccion: direccion?.trim() || '',
+            telefono: telefono?.trim() || ''
+        };
+        
+        console.log('POST clientes - data:', clienteData);
+        
         const headersPost = {
             'apikey': SUPABASE_SERVICE_KEY,
             'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
             'Content-Type': 'application/json',
             'Prefer': 'return=representation'
         };
+        
         const response = await fetch(`${SUPABASE_URL}/rest/v1/clientes`, {
             method: 'POST',
             headers: headersPost,
-            body: JSON.stringify({ nombres, apellidos, direccion, telefono })
+            body: JSON.stringify(clienteData)
         });
+        
         const text = await response.text();
         console.log('Supabase response:', response.status, text);
+        
         if (!response.ok) {
-            return res.status(response.status).json({ error: text });
+            return res.status(response.status).json({ error: text, status: response.status });
         }
+        
         const data = JSON.parse(text);
         res.status(201).json(data[0]);
     } catch (error) {

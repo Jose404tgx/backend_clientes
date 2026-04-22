@@ -148,7 +148,8 @@
                     limpiarFormulario();
                     cargarClientes();
                 } else {
-                    mostrarMensaje('Error al guardar', 'error');
+                    const errData = await response.json();
+                    mostrarMensaje('Error: ' + (errData.error || errData.message || 'Error al guardar'), 'error');
                 }
             } catch (error) {
                 mostrarMensaje('Error al guardar', 'error');
