@@ -57,8 +57,11 @@ app.post('/clientes', async (req, res) => {
             headers: headersPost,
             body: JSON.stringify({ nombres, apellidos, direccion, telefono })
         });
-        const nuevoCliente = await response.json();
-        res.status(201).json(nuevoCliente[0]);
+        const data = await response.json();
+        if (!response.ok) {
+            return res.status(response.status).json(data);
+        }
+        res.status(201).json(data[0]);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
