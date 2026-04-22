@@ -8,7 +8,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 const SUPABASE_URL = 'https://bezcodjjxvwqimvejegh.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlemNvZGpqeHZ3cWltdmVqZWdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU4OTcwMDAsImV4cCI6MjA2MTQ3MzAwMH0.TbO3g6s3O3s1nT5jFZ8R1z5s1t2bH9K5cZ8R1z5s1t';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlemNvZGpqeHZ3cWltdmVqZWdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4NTgyMDAsImV4cCI6MjA5MjQzNDIwMH0.GeRu63lv2oEyf9cXxuy_9T1OGD9LBBP_dGd6Oq8wOAs';
 
 const headers = {
     'apikey': SUPABASE_KEY,
