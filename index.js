@@ -53,20 +53,22 @@ app.post('/clientes', async (req, res) => {
     try {
         const { nombres, apellidos, direccion, telefono } = req.body;
         
-        const clienteData = {
-            nombres: (nombres?.trim() || '').substring(0, 50),
-            apellidos: (apellidos?.trim() || '').substring(0, 50),
-            direccion: (direccion?.trim() || '').substring(0, 50),
-            telefono: (telefono?.trim() || '').substring(0, 50)
-        };
-        
-        console.log('POST clientes - data:', clienteData);
+        if (!nombres || !apellidos || !direccion || !telefono) {
+            return res.status(400).json({ error: 'Todos los campos son requeridos' });
+        }
         
         const headersPost = {
             'apikey': SUPABASE_SERVICE_KEY,
             'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
             'Content-Type': 'application/json',
             'Prefer': 'return=representation'
+        };
+        
+        const clienteData = {
+            nombres: nombres.toString().trim().substring(0, 50),
+            apellidos: apellidos.toString().trim().substring(0, 50),
+            direccion: direccion.toString().trim().substring(0, 50),
+            telefono: telefono.toString().trim().substring(0, 50)
         };
         
         const response = await fetch(`${SUPABASE_URL}/rest/v1/clientes`, {
@@ -76,10 +78,10 @@ app.post('/clientes', async (req, res) => {
         });
         
         const text = await response.text();
-        console.log('Supabase response:', response.status, text);
         
         if (!response.ok) {
-            return res.status(response.status).json({ error: text, status: response.status });
+            console.log('Supabase error:', response.status, text);
+            return res.status(response.status).json({ error: text });
         }
         
         const data = JSON.parse(text);
