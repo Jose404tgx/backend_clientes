@@ -17,11 +17,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const SUPABASE_URL = 'https://bezcodjjxvwqimvejegh.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlemNvZGpqeHZ3cWltdmVqZWdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4NTgyMDAsImV4cCI6MjA5MjQzNDIwMH0.GeRu63lv2oEyf9cXxuy_9T1OGD9LBBP_dGd6Oq8wOAs';
-const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlemNvZGpqeHZ3cWltdmVqZWdoIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Njg1ODIwMCwiZXhwIjoyMDkyNDM0MjAwfQ.uHxjCi2kJ2m1N6Gfz1N3z5s1t2bH9K5cZ8R1z5s1t';
+const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlemNvZGpqeHZ3cWltdmVqZWdoIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Njg1ODIwMCwiZXhwIjoyMDkyNDM0MjAwfQ.dG1xmikYXDd2ciRt7VtAHpZ05fEqErOzBb8363O6LwE';
 
 const headers = {
-    'apikey': SUPABASE_KEY,
-    'Authorization': `Bearer ${SUPABASE_KEY}`,
+    'apikey': SUPABASE_SERVICE_KEY,
+    'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
     'Content-Type': 'application/json',
     'Prefer': 'return=representation'
 };
@@ -53,7 +53,12 @@ app.post('/clientes', async (req, res) => {
     try {
         const { nombres, apellidos, direccion, telefono } = req.body;
         console.log('POST clientes:', req.body);
-        const headersPost = { ...headers, 'Prefer': 'return=representation' };
+        const headersPost = {
+            'apikey': SUPABASE_SERVICE_KEY,
+            'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+        };
         const response = await fetch(`${SUPABASE_URL}/rest/v1/clientes`, {
             method: 'POST',
             headers: headersPost,
@@ -75,17 +80,26 @@ app.post('/clientes', async (req, res) => {
 app.put('/clientes/:id', async (req, res) => {
     try {
         const { nombres, apellidos, direccion, telefono } = req.body;
-        const headersPut = { ...headers, 'Prefer': 'return=representation' };
+        const headersPut = {
+            'apikey': SUPABASE_SERVICE_KEY,
+            'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+        };
         const response = await fetch(`${SUPABASE_URL}/rest/v1/clientes?id_cliente=eq.${req.params.id}`, {
             method: 'PATCH',
             headers: headersPut,
             body: JSON.stringify({ nombres, apellidos, direccion, telefono })
         });
-        const clienteActualizado = await response.json();
-        if (clienteActualizado.length === 0) {
+        const text = await response.text();
+        if (!response.ok) {
+            return res.status(response.status).json({ error: text });
+        }
+        const data = JSON.parse(text);
+        if (data.length === 0) {
             return res.status(404).json({ error: 'Cliente no encontrado' });
         }
-        res.json(clienteActualizado[0]);
+        res.json(data[0]);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -93,9 +107,14 @@ app.put('/clientes/:id', async (req, res) => {
 
 app.delete('/clientes/:id', async (req, res) => {
     try {
+        const headersDel = {
+            'apikey': SUPABASE_SERVICE_KEY,
+            'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+            'Content-Type': 'application/json'
+        };
         const response = await fetch(`${SUPABASE_URL}/rest/v1/clientes?id_cliente=eq.${req.params.id}`, {
             method: 'DELETE',
-            headers
+            headers: headersDel
         });
         if (response.status === 204) {
             res.json({ mensaje: 'Cliente eliminado' });
